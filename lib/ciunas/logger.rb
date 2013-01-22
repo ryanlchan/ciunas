@@ -5,7 +5,12 @@ module Ciunas
       @opts[:silenced] =  if args.last.is_a?(Hash) && args.last[:silenced]
                             args.last[:silenced]
                           elsif ENV['SILENCED_PATHS']
-                            ENV['SILENCED_PATHS']
+                            case ENV['SILENCED_PATHS']
+                            when String
+                              ENV['SILENCED_PATHS'].split(" ")
+                            when Array
+                              ENV['SILENCED_PATHS']
+                            end
                           end
       @opts[:silenced] = [] unless @opts[:silenced].is_a?(Array)
 
