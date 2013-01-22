@@ -1,9 +1,15 @@
 module Ciunas
   class Logger < Rails::Rack::Logger
-    def initialize(app, opts = {})
-      @app = app
-      @opts = opts
-      @opts[:silenced] ||= []
+    def initialize(*args)
+      @opts ||= {}
+      @opts[:silenced] =  if args.last.is_a?(Hash) && args.last[:silenced]
+                            args.last[:silenced]
+                          elsif ENV['SILENCED_PATHS']
+                            ENV['SILENCED_PATHS']
+                          end
+      @opts[:silenced] = [] unless @opts[:silenced].is_a?(Array)
+
+      super(*(args.first(2))) # Reuse Rails::Rack::Logger's initializer, which uses only two config args
     end
 
     def call(env)
@@ -21,4 +27,4 @@ module Ciunas
       end
     end
   end
-end  
+end
